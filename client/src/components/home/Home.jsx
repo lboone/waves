@@ -1,4 +1,6 @@
 import React, { Component } from "react";
+import HomeSlider from "./HomeSlider";
+import HomePromotion from "./HomePromotion";
 
 class Home extends Component {
   userData = this.props.user.userData;
@@ -6,7 +8,8 @@ class Home extends Component {
   render() {
     return (
       <div>
-        Home Hi {this.userData.name} {this.userData.lastname}
+        <HomeSlider />
+        <HomePromotion />
       </div>
     );
   }
