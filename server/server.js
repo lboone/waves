@@ -70,6 +70,45 @@ app.post(
   }
 );
 
+app.post(
+  `/api/${process.env.CURRENT_API_VERSION}/products/shop`,
+  (req, res) => {
+    let order = req.body.order ? req.body.order : "desc";
+    let sortBy = req.body.sortBy ? req.body.sortBy : "_id";
+    let limit = req.body.limit ? parseInt(req.body.limit) : 100;
+    let skip = req.body.skip ? parseInt(req.body.skip) : 0;
+
+    let findArgs = {};
+
+    const filters = req.body.filters;
+    for (let key in filters) {
+      if (filters[key].length > 0) {
+        if (key === "price") {
+          findArgs[key] = {
+            $gte: filters[key][0],
+            $lte: filters[key][1]
+          };
+        } else {
+          findArgs[key] = filters[key];
+        }
+      }
+    }
+    Product.find(findArgs)
+      .populate("brand")
+      .populate("wood")
+      .sort([[sortBy, order]])
+      .skip(skip)
+      .limit(limit)
+      .exec((err, articles) => {
+        if (err) return res.status(400).send(err);
+        res.status(200).json({
+          size: articles.length,
+          articles
+        });
+      });
+  }
+);
+
 // if type === 'id' look for id(s)
 // if type === 'arrival' look for limit
 // if type === 'sold' look for limit

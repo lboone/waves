@@ -6,7 +6,7 @@ import CollapseRadio from "../utils/CollapseRadio";
 import { frets, price } from "../utils/form/fixedCategories";
 
 import {
-  getAllProducts,
+  getProductsToShop,
   getBrands,
   getWoods
 } from "../../actions/product_actions";
@@ -24,9 +24,9 @@ class Shop extends Component {
     }
   };
   componentDidMount() {
-    this.props.dispatch(getAllProducts());
     this.props.dispatch(getBrands());
     this.props.dispatch(getWoods());
+    this.props.dispatch(getProductsToShop(this.state));
   }
   handleFilters = (filters, category) => {
     const newFilters = { ...this.state.filters };
@@ -37,7 +37,7 @@ class Shop extends Component {
     } else {
       newFilters[category] = filters;
     }
-
+    this.showFilteredResults(newFilters);
     this.setState({
       filters: newFilters
     });
@@ -52,9 +52,24 @@ class Shop extends Component {
         array = data[key].array;
       }
     }
-
     return array;
   }
+
+  showFilteredResults = filters => {
+    this.props
+      .dispatch(
+        getProductsToShop({
+          skip: 0,
+          limit: this.state.limit,
+          filters
+        })
+      )
+      .then(() => {
+        this.setState({
+          skip: 0
+        });
+      });
+  };
   render() {
     const products = this.props.products;
     const woods = products.woods;

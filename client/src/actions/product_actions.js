@@ -1,6 +1,7 @@
 import axios from "axios";
 import {
   GET_ALL_PRODUCTS,
+  GET_PRODUCTS_TO_SHOP,
   GET_PRODUCTS_BY_SELL,
   GET_PRODUCTS_BY_ARRIVAL,
   GET_BRANDS,
@@ -19,6 +20,20 @@ export async function getAllProducts() {
   };
 }
 
+export async function getProductsToShop(
+  { skip, limit, filters = [] },
+  previousState = {}
+) {
+  const data = { limit, skip, filters };
+
+  const resp = await axios.post(`${PRODUCT_SERVER}/shop`, data);
+  const request = { size: resp.data.size, articles: resp.data.articles };
+
+  return {
+    type: GET_PRODUCTS_TO_SHOP,
+    payload: request
+  };
+}
 export async function getProductsByArrival() {
   const resp = await axios.get(
     `${PRODUCT_SERVER}/articles?type=arrival&limit=4`
